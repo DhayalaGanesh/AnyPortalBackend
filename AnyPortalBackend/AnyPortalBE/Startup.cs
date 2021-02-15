@@ -93,6 +93,11 @@ namespace AnyPortalBE
                 configureOptions.SaveToken = true;
             });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ApiUser", policy => policy.RequireClaim("rol", "api_access"));
+            });
+
             //var builder = services.AddIdentityCore<AppUser>(o =>
             //{
             //    // configure identity options
@@ -104,7 +109,7 @@ namespace AnyPortalBE
             //});
             //builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
             //builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-            
+
             //For Automapper
             services.AddAutoMapper(typeof(Startup));
 
@@ -122,7 +127,7 @@ namespace AnyPortalBE
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

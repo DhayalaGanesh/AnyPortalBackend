@@ -19,7 +19,7 @@ namespace AnyPortalBE.Auth
         }
         public async Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity)
         {
-            var claims = new[]
+            var claims = new List<Claim>
             {
                  new Claim(JwtRegisteredClaimNames.Sub, userName),
                  new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
@@ -31,7 +31,7 @@ namespace AnyPortalBE.Auth
             var jwt = new JwtSecurityToken(issuer : _jwtOptions.Issuer,
                 audience :  _jwtOptions.Audience, 
                 claims : claims, 
-                notBefore : _jwtOptions.NotBefore, 
+                //notBefore : _jwtOptions.NotBefore, 
                 expires: _jwtOptions.Expiration,
                 signingCredentials: _jwtOptions.SigningCredentials);
 
