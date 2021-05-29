@@ -2,6 +2,7 @@ using AnyPortalBE.Auth;
 using AnyPortalBE.Models;
 using AnyPortalBE.Models.Data;
 using AnyPortalBE.Models.JWT;
+using AnyPortalBE.Models.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,11 +32,19 @@ namespace AnyPortalBE
         // todo: check this secretkey where
         private const string SecretKey = "iNivDmHLpUA223sqsfhqGbMRdRj1PVkH"; 
         private readonly SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
+        private readonly string corsPolicy = "AnyPortalCORS";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddCors(setupAction =>
+            //{
+            //    setupAction.AddPolicy(corsPolicy, builder =>
+            //    {
+            //        builder.WithOrigins("http://localhost:4200");
+            //    });
+            //});
             services.AddControllers();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
@@ -112,7 +121,9 @@ namespace AnyPortalBE
 
             //For Automapper
             services.AddAutoMapper(typeof(Startup));
-
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            services.Configure<UIApplicationSettings>(Configuration.GetSection("UIApplicationSettings"));
+            
 
         }
 
@@ -127,6 +138,14 @@ namespace AnyPortalBE
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            //app.UseCors(corsPolicy);
+            app.UseCors(configurePolicy =>
+            {
+                configurePolicy.AllowAnyOrigin();
+                configurePolicy.AllowAnyMethod();
+                configurePolicy.AllowAnyHeader();
+            });
             app.UseAuthentication();
             app.UseAuthorization();
 
